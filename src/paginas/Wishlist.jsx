@@ -9,9 +9,8 @@ export default function Wishlist({ user }) {
   const [genre, setGenre] = useState("");
   const [loading, setLoading] = useState(true);
 
-  
-  // 🔹 URL base del backend (Railway)
-  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+  // 🌍 URL base del backend (usa .env o fallback a Railway)
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
 
   // 🚀 Cargar wishlist solo si hay usuario
   useEffect(() => {
@@ -20,7 +19,8 @@ export default function Wishlist({ user }) {
         setLoading(true);
 
         if (user && user._id) {
-          const res = await fetch(`/api/users/${user._id}/wishlist`);
+          const res = await fetch(`${API_URL}/api/users/${user._id}/wishlist`);
+          if (!res.ok) throw new Error("Error al obtener wishlist");
           const data = await res.json();
           setWishlist(data || []);
         } else {
@@ -33,7 +33,7 @@ export default function Wishlist({ user }) {
       }
     }
     loadWishlist();
-  }, [user]);
+  }, [user, API_URL]);
 
   const stats = useMemo(() => {
     if (wishlist.length === 0) return { total: 0, sum: 0, avg: 0 };
@@ -63,13 +63,16 @@ export default function Wishlist({ user }) {
   async function removeGame(juego) {
     const idJuego = juego._id || juego.id;
 
+    // Quitar del estado local
     setWishlist((prev) => prev.filter((x) => (x._id || x.id) !== idJuego));
 
+    // Eliminar del backend si hay usuario
     if (user && user._id) {
       try {
-        await fetch(`/api/users/${user._id}/wishlist/${idJuego}`, {
+        const res = await fetch(`${API_URL}/api/users/${user._id}/wishlist/${idJuego}`, {
           method: "DELETE",
         });
+        if (!res.ok) console.error("❌ Error eliminando del servidor");
       } catch (err) {
         console.error("Error eliminando del servidor:", err);
       }

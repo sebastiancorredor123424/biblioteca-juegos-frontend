@@ -12,8 +12,8 @@ export default function GameDetail({ user }) {
   const [hoursPlayed, setHoursPlayed] = useState("");
   const [completed, setCompleted] = useState(false);
 
-  // 🔹 URL del backend
-  const API_URL = import.meta.env.VITE_API_URL || "biblioteca-juegos-backend-production.up.railway.app";
+  // 🌍 URL del backend (usa .env o fallback a Railway)
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
   // === CARGAR JUEGO + DATOS DEL USUARIO ===
@@ -65,7 +65,7 @@ export default function GameDetail({ user }) {
     }
 
     loadGame();
-  }, [id, user, token]);
+  }, [id, user, token, API_URL]);
 
   if (loading) return <p>Cargando...</p>;
   if (!juego) return <h1>Juego no encontrado</h1>;

@@ -18,8 +18,8 @@ export default function Banner() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🌍 URL del backend (Railway)
-  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+  // 🌍 URL del backend (usa .env o fallback a Railway)
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
 
   // 🔁 Cargar juegos desde el backend
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Banner() {
       }
     }
     loadGames();
-  }, []);
+  }, [API_URL]);
 
   // ⏱ Cambiar automáticamente cada 5 segundos
   useEffect(() => {

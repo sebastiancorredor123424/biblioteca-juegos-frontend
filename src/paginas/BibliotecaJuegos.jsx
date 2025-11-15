@@ -65,7 +65,7 @@ export default function BibliotecaJuegos({ user }) {
   ];
 
   // 🔹 URL y token (✅ actualizada para producción)
-  const API_URL = "biblioteca-juegos-backend-production.up.railway.app";
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
   // 🔹 Paginación
@@ -87,7 +87,7 @@ export default function BibliotecaJuegos({ user }) {
       }
     }
     loadGames();
-  }, []);
+  }, [API_URL]);
 
   // 🔹 Cargar datos del usuario
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function BibliotecaJuegos({ user }) {
     }
 
     loadUserData();
-  }, [user, token]);
+  }, [user, token, API_URL]);
 
   // 🔹 Añadir a wishlist
   async function addWishlist(juego) {
