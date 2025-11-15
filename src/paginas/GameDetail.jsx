@@ -72,10 +72,10 @@ export default function GameDetail({ user }) {
 
   const precio = juego.precio || 100000;
 
-  // Construir URL correcta del banner
+  // 🔹 Construir URL correcta del banner desde public/images
   const bannerUrl = juego.banner.startsWith("http")
     ? juego.banner
-    : `${API_URL}/${juego.banner}`;
+    : `/images/${juego.banner}`;
 
   // === FAVORITO ===
   async function toggleFavorite() {
