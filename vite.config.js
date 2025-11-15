@@ -11,7 +11,7 @@ export default defineConfig({
   // 📌 Base correcta para GitHub Pages — importante que coincida con tu repo
   // En dev: '/', en prod: '/biblioteca-juegos-frontend/'
   base: isProd ? '/biblioteca-juegos-frontend/' : '/',
-  
+
   server: {
     port: 5173,
     proxy: {
