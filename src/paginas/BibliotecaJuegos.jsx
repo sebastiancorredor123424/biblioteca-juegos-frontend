@@ -64,8 +64,8 @@ export default function BibliotecaJuegos({ user }) {
     "Narrativa fuerte","Sandbox total","Ultradifícil"
   ];
 
-  // 🔹 URL y token
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  // 🔹 URL y token (✅ actualizada para producción)
+  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
   // 🔹 Paginación
