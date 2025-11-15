@@ -15,7 +15,8 @@ export default function Register({ onRegister }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || "biblioteca-juegos-backend-production.up.railway.app";
+  // 🔹 Corregido: usar URL completa del backend
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
 
   function handleChange(e) {
     const { name, value } = e.target;

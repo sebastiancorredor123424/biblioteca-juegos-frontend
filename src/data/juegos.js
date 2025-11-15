@@ -5,8 +5,8 @@ export default [
     titulo: "Marvel's Spider-Man",
     genero: "Acción",
     plataforma: "PlayStation",
-    imagen: "/images/MarvelsSpiderMan.jpg",
-    banner: "/images/MarvelsSpiderMan.banner.jpg",
+    imagen: "images/MarvelsSpiderMan.jpg",
+    banner: "images/MarvelsSpiderMan.banner.jpg",
     descripcion:
       "Vive la experiencia definitiva del superhéroe con una historia emocionante y combates espectaculares en la ciudad de Nueva York.",
     historia:
