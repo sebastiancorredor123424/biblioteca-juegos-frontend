@@ -40,7 +40,7 @@ export default function Community({ user }) {
   // ============================
   async function loadReviews() {
     try {
-      const res = await fetch("http://localhost:4000/api/reviews");
+      const res = await fetch("biblioteca-juegos-backend-production.up.railway.app");
       const data = await res.json();
       setReviews(data);
     } catch (err) {

@@ -9,6 +9,10 @@ export default function Wishlist({ user }) {
   const [genre, setGenre] = useState("");
   const [loading, setLoading] = useState(true);
 
+  
+  // 🔹 URL base del backend (Railway)
+  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+
   // 🚀 Cargar wishlist solo si hay usuario
   useEffect(() => {
     async function loadWishlist() {

@@ -5,15 +5,20 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import BibliotecaJuegos from "./paginas/BibliotecaJuegos";
 import GameDetail from "./paginas/GameDetail";
 import Settings from "./paginas/Settings";
-import Wishlist from "./paginas/wishlist";
+import Wishlist from "./paginas/Wishlist";
 import Login from "./paginas/Login";
 import Register from "./paginas/Register";
 import Buy from "./paginas/Buy";
-import Community from "./paginas/Community"; 
+import Community from "./paginas/Community";
 
 // ⚙️ Componentes
 import AuthButtons from "./components/AuthButtons";
 import ProfileBox from "./components/ProfileBox";
+
+// 🌍 URL base del backend (Railway)
+export const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://biblioteca-juegos-backend-production.up.railway.app";
 
 // 🔹 Crear contexto de usuario
 export const UserContext = createContext();
@@ -57,26 +62,20 @@ export default function App() {
         {/* 💖 Lista de deseos */}
         <Route
           path="/wishlist"
-          element={
-            user ? (
-              <Wishlist user={user} />
-            ) : (
-              <Navigate to="/biblioteca-juegos-frontend/login" />
-            )
-          }
+          element={user ? <Wishlist user={user} /> : <Navigate to="/login" />}
         />
 
         {/* 🎮 Detalle de juego */}
         <Route path="/game/:id" element={<GameDetail user={user} />} />
 
         {/* ⚙️ Configuración */}
-        <Route path="/Settings" element={<Settings user={user} />} />
+        <Route path="/settings" element={<Settings user={user} />} />
 
         {/* 🌍 Comunidad */}
-        <Route path="/Community" element={<Community user={user} />} />
+        <Route path="/community" element={<Community user={user} />} />
 
         {/* 💰 Compra de juegos */}
-        <Route path="/Buy" element={<Buy user={user} />} />
+        <Route path="/buy" element={<Buy user={user} />} />
 
         {/* 🔐 Autenticación */}
         <Route path="/login" element={<Login onLogin={handleLogin} />} />

@@ -65,7 +65,7 @@ export default function BibliotecaJuegos({ user }) {
   ];
 
   // 🔹 URL y token (✅ actualizada para producción)
-  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+  const API_URL = "biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
   // 🔹 Paginación

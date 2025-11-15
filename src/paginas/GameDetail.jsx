@@ -13,7 +13,7 @@ export default function GameDetail({ user }) {
   const [completed, setCompleted] = useState(false);
 
   // 🔹 URL del backend
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const API_URL = import.meta.env.VITE_API_URL || "biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
   // === CARGAR JUEGO + DATOS DEL USUARIO ===

@@ -5,6 +5,10 @@ export default function Settings({ user: propUser }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("cuenta");
 
+  
+  // 🔹 URL base del backend (Railway)
+  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+
   // 🔐 Usuario desde sesión o prop
   const [user, setUser] = useState(() => {
     const localUser = JSON.parse(localStorage.getItem("gt_user"));

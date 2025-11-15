@@ -18,13 +18,18 @@ export default function Banner() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // 🌍 URL del backend (Railway)
+  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+
   // 🔁 Cargar juegos desde el backend
   useEffect(() => {
     async function loadGames() {
       try {
         setLoading(true);
-        const res = await fetch("/api/games"); // gracias al proxy en package.json
+        const res = await fetch(`${API_URL}/api/games`);
+        if (!res.ok) throw new Error("Error al cargar los juegos");
         const data = await res.json();
+
         if (Array.isArray(data) && data.length > 0) {
           const shuffled = shuffleArray(data);
           setJuegos(data);
