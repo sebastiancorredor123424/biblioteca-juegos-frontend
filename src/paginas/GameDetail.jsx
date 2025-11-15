@@ -72,6 +72,11 @@ export default function GameDetail({ user }) {
 
   const precio = juego.precio || 100000;
 
+  // Construir URL correcta del banner
+  const bannerUrl = juego.banner.startsWith("http")
+    ? juego.banner
+    : `${API_URL}/${juego.banner}`;
+
   // === FAVORITO ===
   async function toggleFavorite() {
     if (!user?._id || !token) return navigate("/login");
@@ -175,7 +180,7 @@ export default function GameDetail({ user }) {
   return (
     <div className="game-detail">
       <div className="detail-top">
-        <img className="detail-banner" src={juego.banner} alt={juego.titulo} />
+        <img className="detail-banner" src={bannerUrl} alt={juego.titulo} />
 
         <div className="detail-card">
           <h1>{juego.titulo}</h1>
