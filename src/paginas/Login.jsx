@@ -8,7 +8,8 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState("");
 
   // 🔹 Corregido: usar URL completa del backend
-  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
+ const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
+
 
   async function handleSubmit(e) {
     e.preventDefault();
