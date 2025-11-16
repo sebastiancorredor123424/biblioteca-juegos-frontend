@@ -5,31 +5,30 @@ export default function Community({ user }) {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [games, setGames] = useState([]); // AHORA VIENE DE MONGO
-
+  const [games, setGames] = useState([]);
   const [gameFilter, setGameFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortBy, setSortBy] = useState("recent");
-
   const [newReview, setNewReview] = useState({
     gameId: "",
     title: "",
     body: "",
     score: 5,
   });
-
   const [formError, setFormError] = useState("");
   const [commentText, setCommentText] = useState({});
+
+  // 🌍 URL del backend (desde .env o por defecto Railway)
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
 
   // ============================
   // 🔵 Cargar juegos desde Mongo
   // ============================
   async function loadGames() {
     try {
-      const res = await fetch("http://localhost:4000/api/games");
+      const res = await fetch(`${API_URL}/api/games`);
       const data = await res.json();
-      setGames(data); // Cada juego tiene: _id, titulo, plataforma, imagen, etc
+      setGames(data);
     } catch (err) {
       console.log("❌ Error cargando juegos", err);
     }
@@ -40,7 +39,7 @@ export default function Community({ user }) {
   // ============================
   async function loadReviews() {
     try {
-      const res = await fetch("biblioteca-juegos-backend-production.up.railway.app");
+      const res = await fetch(`${API_URL}/api/reviews`);
       const data = await res.json();
       setReviews(data);
     } catch (err) {
@@ -75,17 +74,15 @@ export default function Community({ user }) {
       return setFormError("La reseña debe tener mínimo 50 caracteres.");
 
     const payload = {
-      gameId: newReview.gameId, // AHORA ES UN ObjectId válido
+      gameId: newReview.gameId,
       userName: user.name || user.username || user.correo,
       title: newReview.title.trim(),
       body: newReview.body.trim(),
       score: Number(newReview.score),
     };
 
-    console.log("Payload enviado:", payload);
-
     try {
-      const res = await fetch("http://localhost:4000/api/reviews", {
+      const res = await fetch(`${API_URL}/api/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -115,7 +112,7 @@ export default function Community({ user }) {
     if (!confirm("¿Eliminar reseña?")) return;
 
     try {
-      await fetch(`http://localhost:4000/api/reviews/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/api/reviews/${id}`, { method: "DELETE" });
       setReviews((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
       console.log("❌ Error eliminando reseña", err);
@@ -132,7 +129,7 @@ export default function Community({ user }) {
     if (!body || body.length < 2) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/reviews/${id}/comment`, {
+      const res = await fetch(`${API_URL}/api/reviews/${id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName: user.name, text: body }),
@@ -157,7 +154,7 @@ export default function Community({ user }) {
     if (!user) return alert("Inicia sesión.");
 
     try {
-      const res = await fetch(`http://localhost:4000/api/reviews/${id}/like`, {
+      const res = await fetch(`${API_URL}/api/reviews/${id}/like`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName: user.name }),

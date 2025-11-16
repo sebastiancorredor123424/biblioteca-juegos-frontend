@@ -12,7 +12,6 @@ export default function GameDetail({ user }) {
   const [hoursPlayed, setHoursPlayed] = useState("");
   const [completed, setCompleted] = useState(false);
 
-  // 🌍 URL del backend (usa .env o fallback a Railway)
   const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
@@ -22,14 +21,12 @@ export default function GameDetail({ user }) {
       try {
         setLoading(true);
 
-        // === Obtener juego ===
         const res = await fetch(`${API_URL}/api/games/${id}`);
         if (!res.ok) throw new Error("Juego no encontrado");
         const data = await res.json();
         setJuego(data);
 
         if (user?._id && token) {
-          // === Favoritos ===
           const favRes = await fetch(`${API_URL}/api/users/${user._id}/favorites`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
@@ -38,7 +35,6 @@ export default function GameDetail({ user }) {
             setIsFavorite(favData.some((g) => g._id === id));
           }
 
-          // === Completados ===
           const compRes = await fetch(`${API_URL}/api/users/${user._id}/completed`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
@@ -47,7 +43,6 @@ export default function GameDetail({ user }) {
             setCompleted(compData.some((g) => g._id === id));
           }
 
-          // === Horas ===
           const hoursRes = await fetch(`${API_URL}/api/users/${user._id}/hours/${id}`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
@@ -72,10 +67,8 @@ export default function GameDetail({ user }) {
 
   const precio = juego.precio || 100000;
 
-  // 🔹 Construir URL correcta del banner desde public/images
-  const bannerUrl = juego.banner.startsWith("http")
-    ? juego.banner
-    : `/images/${juego.banner}`;
+  // 🔹 RUTA CORRECTA → NO modificar, usar tal cual viene del backend
+  const bannerUrl = juego.banner;
 
   // === FAVORITO ===
   async function toggleFavorite() {
@@ -189,19 +182,16 @@ export default function GameDetail({ user }) {
           <p><strong>Precio:</strong> ${precio.toLocaleString("es-CO")} COP</p>
           <p><strong>Descripción:</strong> {juego.descripcion}</p>
 
-          {/* ⭐ Favorito */}
           <button className="btn favorite" onClick={toggleFavorite}>
             {isFavorite ? "⭐ Quitar de favoritos" : "⭐ Marcar como favorito"}
           </button>
 
-          {/* ✔ Completado */}
           <button className="btn completed" onClick={toggleCompleted}>
             {completed
               ? "✔ Juego completado (clic para quitar)"
               : "✔ Marcar como completado"}
           </button>
 
-          {/* ⏱ Horas */}
           <div className="hours-box">
             <h3>⏱️ Registrar horas jugadas</h3>
             <input

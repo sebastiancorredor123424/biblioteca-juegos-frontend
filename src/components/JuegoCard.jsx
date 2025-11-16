@@ -12,13 +12,16 @@ export default function BibliotecaJuegos({ user }) {
   const [platform, setPlatform] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 🔹 URL del backend (Railway)
-  const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+  // 🔹 URL del backend (usa .env VITE_API_URL si existe, si no fallback a Railway)
+  const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
+
+  // BASE_PATH para resolver imágenes en GitHub Pages / Vite (ej: "/mi-repo/")
+  const BASE_PATH = import.meta.env.BASE_URL || "/";
 
   // 🔹 Juegos traídos del backend
   const [juegosApi, setJuegosApi] = useState([]);
 
-  // 🔹 Datos locales
+  // 🔹 Datos locales (localStorage)
   const [wishlist, setWishlist] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("gt_wishlist") || "[]");
@@ -58,17 +61,18 @@ export default function BibliotecaJuegos({ user }) {
         const res = await fetch(`${API_URL}/api/games`);
         if (!res.ok) throw new Error("Error cargando juegos");
         const data = await res.json();
-        setJuegosApi(data);
+        setJuegosApi(data || []);
       } catch (err) {
         console.error("❌ Error al cargar juegos del backend:", err);
+        setJuegosApi([]);
       } finally {
         setLoading(false);
       }
     }
     loadGames();
-  }, []);
+  }, [API_URL]);
 
-  // ✅ Añadir a lista de deseos
+  // ✅ Añadir a lista de deseos (local)
   function addWishlist(j) {
     if (!user) {
       alert("🔒 Debes iniciar sesión para agregar juegos a tu lista de deseos.");
@@ -76,16 +80,18 @@ export default function BibliotecaJuegos({ user }) {
       return;
     }
 
-    if (wishlist.find((x) => x._id === j._id))
+    if (wishlist.find((x) => x._id === j._id)) {
       return alert("⚠️ Este juego ya está en tu lista de deseos.");
-    if (purchased.find((x) => x._id === j._id))
+    }
+    if (purchased.find((x) => x._id === j._id)) {
       return alert("✅ Ya compraste este juego, no puedes añadirlo a deseos.");
+    }
 
     setWishlist((prev) => [...prev, j]);
     alert(`💖 ${j.titulo} añadido a tu lista de deseos.`);
   }
 
-  // ✅ Añadir a favoritos
+  // ✅ Añadir a favoritos (local)
   function addFavorite(j) {
     if (!user) {
       alert("🔒 Debes iniciar sesión para agregar a favoritos.");
@@ -107,7 +113,7 @@ export default function BibliotecaJuegos({ user }) {
     alert(`⭐ ${j.titulo} añadido a tus favoritos.`);
   }
 
-  // ✅ Actualizar horas jugadas
+  // ✅ Actualizar horas jugadas (local en purchased)
   function updatePlaytime(j, hours) {
     setPurchased((prev) =>
       prev.map((x) =>
@@ -116,7 +122,7 @@ export default function BibliotecaJuegos({ user }) {
     );
   }
 
-  // ✅ Comprar → redirige a /buy
+  // ✅ Comprar → redirige a /buy (localStorage cart)
   function buy(j) {
     if (!user) {
       alert("🔒 Debes iniciar sesión para comprar juegos.");
@@ -140,6 +146,16 @@ export default function BibliotecaJuegos({ user }) {
       return true;
     });
   }, [juegosApi, genre, platform, busqueda]);
+
+  // Helper: normalizar ruta de imagen para evitar doble /images/ o rutas relativas en GH Pages
+  function resolveImageUrl(imgPath) {
+    if (!imgPath) return ""; // fallback
+    if (imgPath.startsWith("http")) return imgPath;
+    // Si ya comienza con "/" (ej: "/images/archivo.jpg") eliminamos la leading slash para concatenar correctamente con BASE_PATH
+    const cleaned = imgPath.replace(/^\/+/, "");
+    // Si BASE_PATH es "/", la concatenación queda "/images/archivo.jpg"
+    return `${BASE_PATH}${cleaned}`;
+  }
 
   return (
     <div className="biblioteca-container">
@@ -195,9 +211,12 @@ export default function BibliotecaJuegos({ user }) {
                 const comprado = purchased.find((x) => x._id === j._id);
                 const esFavorito = favorites.find((x) => x._id === j._id);
 
+                // ✅ Normalizamos la URL de la imagen aquí para evitar 404 en GH Pages
+                const imgSrc = resolveImageUrl(j.imagen);
+
                 return (
                   <div key={j._id} className="juego-card">
-                    <img src={j.imagen} alt={j.titulo} />
+                    <img src={imgSrc} alt={j.titulo} />
                     <h3>{j.titulo}</h3>
                     <p className="meta">
                       {j.genero} • {j.plataforma}
@@ -242,9 +261,7 @@ export default function BibliotecaJuegos({ user }) {
 
                           {comprado && (
                             <button
-                              className={`btn ${
-                                esFavorito ? "disabled" : "highlight"
-                              }`}
+                              className={`btn ${esFavorito ? "disabled" : "highlight"}`}
                               onClick={() => addFavorite(j)}
                             >
                               ⭐ {esFavorito ? "En favoritos" : "Añadir a favoritos"}

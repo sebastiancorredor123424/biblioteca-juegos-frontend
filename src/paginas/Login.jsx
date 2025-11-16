@@ -7,9 +7,9 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // 🔹 Corregido: usar URL completa del backend
- const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
-
+  // 🔹 URL correcta con "/" final obligatorio
+  const API_URL =
+    (import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app/").trim();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,24 +21,33 @@ export default function Login({ onLogin }) {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/users/login`, {
+      const res = await fetch(`${API_URL}api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: email, password }),
+        credentials: "include",
       });
 
-      const data = await res.json();
+      // Evitar parsear HTML como JSON
+      const text = await res.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Error inesperado en la respuesta del servidor.");
+      }
+
       if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
 
       // Guardar usuario y token
       localStorage.setItem("gt_user", JSON.stringify(data.user));
       localStorage.setItem("gt_token", data.token);
 
-      // Actualizar estado global
       if (onLogin) onLogin(data.user);
 
       alert(`🎮 Bienvenido de nuevo, ${data.user.nombre}!`);
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
       setError(`❌ ${err.message}`);
     }
@@ -51,16 +60,32 @@ export default function Login({ onLogin }) {
         {error && <div className="error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <button className="btn primary full" type="submit">Ingresar</button>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button className="btn primary full" type="submit">
+            Ingresar
+          </button>
         </form>
 
         <div className="auth-links">
           <Link to="/register">¿No tienes cuenta? Crea una</Link>
         </div>
 
-        <button className="btn outline full" onClick={() => navigate("/")} style={{ marginTop: "10px" }}>
+        <button
+          className="btn outline full"
+          onClick={() => navigate("/")}
+          style={{ marginTop: "10px" }}
+        >
           🏠 Regresar a Biblioteca
         </button>
       </div>
