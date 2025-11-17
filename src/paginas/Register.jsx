@@ -54,14 +54,10 @@ export default function Register({ onRegister }) {
       const res = await fetch(`${API_URL}api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          userName: form.userName,
-          correo: form.correo,
-          password: form.password,
-          avatar: form.fotoPerfil, // se envía como avatar al backend
-        }),
+        body: JSON.stringify(form),
+        //credentials: "include", 
       });
+
 
       const raw = await res.text();
 
