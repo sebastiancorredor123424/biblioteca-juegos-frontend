@@ -68,7 +68,7 @@ export default function GameDetail({ user }) {
   const precio = juego.precio || 100000;
 
   // 🔹 RUTA CORRECTA → NO modificar, usar tal cual viene del backend
-  const bannerUrl = juego.banner;
+  const bannerUrl = juego.banner.jpg;
 
   // === FAVORITO ===
   async function toggleFavorite() {
