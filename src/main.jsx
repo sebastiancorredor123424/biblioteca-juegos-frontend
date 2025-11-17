@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
@@ -17,4 +17,40 @@ createRoot(document.getElementById('root')).render(
       <App />
     </BrowserRouter>
   </React.StrictMode>
+)*/
+
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
+import './styles.css'
+
+// ✅ Verificación del entorno y del .env
+console.log("✅ Entorno actual:", import.meta.env.MODE)
+console.log("✅ VITE_API_URL =", import.meta.env.VITE_API_URL)
+
+// 🔧 Parche global: forzar credentials: 'omit' en TODAS las peticiones fetch
+if (window.fetch) {
+  const originalFetch = window.fetch
+
+  window.fetch = (input, init = {}) => {
+    const mergedInit = {
+      ...init,
+      credentials: 'omit', // 👈 aquí pisamos cualquier "include"
+    }
+
+    return originalFetch(input, mergedInit)
+  }
+}
+
+// 🧩 Detecta automáticamente si estás en desarrollo o producción
+const baseName = import.meta.env.DEV ? "/" : "/biblioteca-juegos-frontend/"
+
+createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter basename={baseName}>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 )
+
