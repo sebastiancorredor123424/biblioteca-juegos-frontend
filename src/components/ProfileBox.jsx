@@ -4,12 +4,18 @@ import { Link } from "react-router-dom";
 export default function ProfileBox({ user, onLogout }) {
   const [open, setOpen] = useState(false);
 
+  // Definir avatar por defecto si el usuario no tiene uno
+  const avatarUrl =
+    user.avatar && user.avatar.trim() !== ""
+      ? user.avatar
+      : "https://www.futwiz.com/assets/img/fifa18/careerfaces/158023.png";
+
   return (
     <div className="profile-box" onMouseLeave={() => setOpen(false)}>
       <div className="profile-main" onClick={() => setOpen((v) => !v)}>
         <img
-          src={user.avatar || "images/default-avatar.png"}
-          alt={user.name}
+          src={avatarUrl}
+          alt={user.name || "Usuario"}
           className="avatar"
         />
         <span>{user.name}</span>

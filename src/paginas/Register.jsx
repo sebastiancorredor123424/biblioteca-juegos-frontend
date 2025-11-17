@@ -9,6 +9,7 @@ export default function Register({ onRegister }) {
     userName: "",
     correo: "",
     password: "",
+    confirmPassword: "",
     fotoPerfil: "",
   });
 
@@ -34,9 +35,15 @@ export default function Register({ onRegister }) {
       !form.nombre.trim() ||
       !form.userName.trim() ||
       !form.correo.trim() ||
-      !form.password.trim()
+      !form.password.trim() ||
+      !form.confirmPassword.trim()
     ) {
       setError("⚠️ Todos los campos son obligatorios excepto la foto de perfil.");
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      setError("⚠️ Las contraseñas no coinciden.");
       return;
     }
 
@@ -46,8 +53,13 @@ export default function Register({ onRegister }) {
       const res = await fetch(`${API_URL}api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-        // ❌ ya NO se usa credentials en register
+        body: JSON.stringify({
+          nombre: form.nombre,
+          userName: form.userName,
+          correo: form.correo,
+          password: form.password,
+          avatar: form.fotoPerfil, // se envía como avatar al backend
+        }),
       });
 
       const raw = await res.text();
@@ -129,6 +141,14 @@ export default function Register({ onRegister }) {
             name="password"
             placeholder="Contraseña"
             value={form.password}
+            onChange={handleChange}
+          />
+
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirmar contraseña"
+            value={form.confirmPassword}
             onChange={handleChange}
           />
 
