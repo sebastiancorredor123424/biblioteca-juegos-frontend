@@ -20,6 +20,7 @@ export default function Register({ onRegister }) {
     (import.meta.env.VITE_API_URL ??
       "https://biblioteca-juegos-backend-production.up.railway.app")
       .replace(/\/+$/, "") + "/";
+      const token = localStorage.getItem("gt_token");
 
   function handleChange(e) {
     const { name, value } = e.target;

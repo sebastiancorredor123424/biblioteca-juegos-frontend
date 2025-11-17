@@ -64,7 +64,7 @@ export default function BibliotecaJuegos({ user }) {
     "Narrativa fuerte","Sandbox total","Ultradifícil"
   ];
 
-  // 🔹 URL y token (✅ actualizada para producción)
+  // 🔹 URL y token
   const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
@@ -242,7 +242,8 @@ export default function BibliotecaJuegos({ user }) {
       </aside>
 
       <main className="contenido">
-        <Banner />
+        {/* 🔹 Banner con avatar por defecto */}
+        <Banner avatar={user?.avatar || "https://www.futwiz.com/assets/img/fifa18/careerfaces/158023.png"} />
 
         {/* 🔵 Filtros y botones */}
         <div className="flex gap-4 mb-4 mt-2">
