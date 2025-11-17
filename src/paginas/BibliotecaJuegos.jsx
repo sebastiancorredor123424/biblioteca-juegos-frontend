@@ -213,7 +213,6 @@ export default function BibliotecaJuegos({ user }) {
   function openEditModal(juego) {
     setSelectedGame(juego);
 
-    // ✔ CORREGIDO — ahora sí carga historia, descripción y requisitos
     setNewGame({
       clave: juego.clave || "",
       titulo: juego.titulo || "",
@@ -271,7 +270,6 @@ export default function BibliotecaJuegos({ user }) {
                 <input type="text" placeholder="Historia" required value={newGame.historia} onChange={(e) => setNewGame({...newGame, historia: e.target.value})} />
                 <input type="text" placeholder="Requisitos mínimos" required value={newGame.requisitosMinimos} onChange={(e) => setNewGame({...newGame, requisitosMinimos: e.target.value})} />
 
-                {/* ✔ CAMPOS NUMÉRICOS CLAROS */}
                 <input type="number" placeholder="Precio (COP)" required value={newGame.precio} onChange={(e) => setNewGame({...newGame, precio: Number(e.target.value)})} />
                 <input type="number" placeholder="Descargas totales" required value={newGame.descargas} onChange={(e) => setNewGame({...newGame, descargas: Number(e.target.value)})} />
                 <input type="number" placeholder="Calificación (0 - 10)" step="0.1" required value={newGame.calificacion} onChange={(e) => setNewGame({...newGame, calificacion: Number(e.target.value)})} />
@@ -326,7 +324,8 @@ export default function BibliotecaJuegos({ user }) {
                       {user && token && (
                         <>
                           <button className="btn editar primary" onClick={() => openEditModal(j)}>Editar</button>
-                          <button className="btn eliminar outline" onClick={() => handleDeleteGame(j)}>Eliminar</button>
+
+                          {/* 🔥 EL BOTÓN ELIMINAR FUE BORRADO AQUÍ */}
                         </>
                       )}
                     </div>
