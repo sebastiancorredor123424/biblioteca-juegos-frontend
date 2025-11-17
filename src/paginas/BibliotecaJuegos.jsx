@@ -18,11 +18,9 @@ export default function BibliotecaJuegos({ user }) {
 
   const [loading, setLoading] = useState(true);
 
-  // 🔵 toggles
   const [soloFavoritos, setSoloFavoritos] = useState(false);
   const [soloCompletados, setSoloCompletados] = useState(false);
 
-  // 🔵 Modal agregar/editar
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
@@ -42,7 +40,6 @@ export default function BibliotecaJuegos({ user }) {
     calificacion: 0,
   });
 
-  // 🎭 Géneros y etiquetas
   const genres = [
     "Acción","Aventura","RPG","Shooter","Estrategia","Simulación",
     "Carreras","Deportes","Peleas","Survival Horror","Sandbox",
@@ -64,15 +61,12 @@ export default function BibliotecaJuegos({ user }) {
     "Narrativa fuerte","Sandbox total","Ultradifícil"
   ];
 
-  // 🔹 URL y token
   const API_URL = import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app";
   const token = localStorage.getItem("gt_token");
 
-  // 🔹 Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const gamesPerPage = 8;
 
-  // 🔹 Cargar juegos
   useEffect(() => {
     async function loadGames() {
       try {
@@ -89,7 +83,6 @@ export default function BibliotecaJuegos({ user }) {
     loadGames();
   }, [API_URL]);
 
-  // 🔹 Cargar datos del usuario
   useEffect(() => {
     if (!user?._id || !token) return;
 
@@ -110,14 +103,13 @@ export default function BibliotecaJuegos({ user }) {
         });
         if (compRes.ok) setCompletados(await compRes.json() || []);
       } catch (err) {
-        console.error("❌ Error cargando datos del usuario:", err);
+        console.error("❌ Error cargando datos:", err);
       }
     }
 
     loadUserData();
   }, [user, token, API_URL]);
 
-  // 🔹 Añadir a wishlist
   async function addWishlist(juego) {
     if (!user || !token) {
       alert("🔒 Debes iniciar sesión para agregar juegos.");
@@ -134,13 +126,12 @@ export default function BibliotecaJuegos({ user }) {
         const data = await res.json();
         setWishlist(data.wishlist || [...wishlist, juego]);
         alert("💖 Añadido a tu lista de deseos.");
-      } else alert("⚠️ Error al añadir.");
+      }
     } catch (err) {
       console.error("Error al añadir a wishlist:", err);
     }
   }
 
-  // 🔹 Crear o editar juego
   async function handleSaveGame(e) {
     e.preventDefault();
     if (!token) return alert("Debes iniciar sesión.");
@@ -180,7 +171,6 @@ export default function BibliotecaJuegos({ user }) {
     }
   }
 
-  // 🔹 Eliminar juego
   async function handleDeleteGame(juego) {
     if (!token) return alert("Debes iniciar sesión.");
     if (!window.confirm(`¿Seguro que quieres eliminar "${juego.titulo}"?`)) return;
@@ -199,7 +189,6 @@ export default function BibliotecaJuegos({ user }) {
     }
   }
 
-  // 🔹 Filtros
   const filtered = useMemo(() => {
     return juegosApi.filter(j => {
       if (genre && j.genero !== genre) return false;
@@ -212,7 +201,6 @@ export default function BibliotecaJuegos({ user }) {
     });
   }, [juegosApi, genre, tag, platform, busqueda, soloFavoritos, soloCompletados, favoritos, completados]);
 
-  // 🔹 Paginación
   const totalPages = Math.ceil(filtered.length / gamesPerPage);
   const indexOfLastGame = currentPage * gamesPerPage;
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
@@ -224,7 +212,24 @@ export default function BibliotecaJuegos({ user }) {
 
   function openEditModal(juego) {
     setSelectedGame(juego);
-    setNewGame({ ...juego });
+
+    // ✔ CORREGIDO — ahora sí carga historia, descripción y requisitos
+    setNewGame({
+      clave: juego.clave || "",
+      titulo: juego.titulo || "",
+      genero: juego.genero || "",
+      plataforma: juego.plataforma || "",
+      imagen: juego.imagen || "",
+      banner: juego.banner || "",
+      descripcion: juego.descripcion || "",
+      historia: juego.historia || "",
+      requisitosMinimos: juego.requisitosMinimos || "",
+      precio: juego.precio || 0,
+      descargas: juego.descargas || 0,
+      completado: juego.completado || false,
+      calificacion: juego.calificacion || 0,
+    });
+
     setShowEditModal(true);
   }
 
@@ -242,44 +247,45 @@ export default function BibliotecaJuegos({ user }) {
       </aside>
 
       <main className="contenido">
-        {/* 🔹 Banner con avatar por defecto */}
         <Banner avatar={user?.avatar || "https://www.futwiz.com/assets/img/fifa18/careerfaces/158023.png"} />
 
-        {/* 🔵 Filtros y botones */}
         <div className="flex gap-4 mb-4 mt-2">
           <button onClick={() => setSoloFavoritos(s => !s)} className={`btn ${soloFavoritos ? "primary" : "outline"}`}>⭐ Favoritos</button>
           <button onClick={() => setSoloCompletados(s => !s)} className={`btn ${soloCompletados ? "success" : "outline"}`}>✔ Completados</button>
           {user && token && <button className="btn outline" onClick={() => setShowAddModal(true)}>➕ Añadir Juego</button>}
         </div>
 
-        {/* 🔹 Modal añadir/editar */}
         {(showAddModal || showEditModal) && (
           <div className="modal-overlay">
             <div className="modal">
               <h3>{showEditModal ? "Editar juego" : "Agregar nuevo juego"}</h3>
+
               <form onSubmit={handleSaveGame} className="flex flex-col gap-2">
-                <input type="text" placeholder="Clave" value={newGame.clave} onChange={(e) => setNewGame({...newGame, clave: e.target.value})} required />
-                <input type="text" placeholder="Título" value={newGame.titulo} onChange={(e) => setNewGame({...newGame, titulo: e.target.value})} required />
-                <input type="text" placeholder="Género" value={newGame.genero} onChange={(e) => setNewGame({...newGame, genero: e.target.value})} required />
-                <input type="text" placeholder="Plataforma" value={newGame.plataforma} onChange={(e) => setNewGame({...newGame, plataforma: e.target.value})} required />
-                <input type="text" placeholder="URL Imagen" value={newGame.imagen} onChange={(e) => setNewGame({...newGame, imagen: e.target.value})} required />
-                <input type="text" placeholder="URL Banner" value={newGame.banner} onChange={(e) => setNewGame({...newGame, banner: e.target.value})} required />
-                <input type="text" placeholder="Descripción" value={newGame.descripcion} onChange={(e) => setNewGame({...newGame, descripcion: e.target.value})} required />
-                <input type="text" placeholder="Historia" value={newGame.historia} onChange={(e) => setNewGame({...newGame, historia: e.target.value})} required />
-                <input type="text" placeholder="Requisitos mínimos" value={newGame.requisitosMinimos} onChange={(e) => setNewGame({...newGame, requisitosMinimos: e.target.value})} required />
-                <input type="number" placeholder="Precio" value={newGame.precio} onChange={(e) => setNewGame({...newGame, precio: Number(e.target.value)})} required />
-                <input type="number" placeholder="Descargas" value={newGame.descargas} onChange={(e) => setNewGame({...newGame, descargas: Number(e.target.value)})} required />
-                <input type="number" placeholder="Calificación" value={newGame.calificacion} step="0.1" onChange={(e) => setNewGame({...newGame, calificacion: Number(e.target.value)})} required />
+                <input type="text" placeholder="Clave" required value={newGame.clave} onChange={(e) => setNewGame({...newGame, clave: e.target.value})} />
+                <input type="text" placeholder="Título" required value={newGame.titulo} onChange={(e) => setNewGame({...newGame, titulo: e.target.value})} />
+                <input type="text" placeholder="Género" required value={newGame.genero} onChange={(e) => setNewGame({...newGame, genero: e.target.value})} />
+                <input type="text" placeholder="Plataforma" required value={newGame.plataforma} onChange={(e) => setNewGame({...newGame, plataforma: e.target.value})} />
+                <input type="text" placeholder="URL Imagen" required value={newGame.imagen} onChange={(e) => setNewGame({...newGame, imagen: e.target.value})} />
+                <input type="text" placeholder="URL Banner" required value={newGame.banner} onChange={(e) => setNewGame({...newGame, banner: e.target.value})} />
+                <input type="text" placeholder="Descripción" required value={newGame.descripcion} onChange={(e) => setNewGame({...newGame, descripcion: e.target.value})} />
+                <input type="text" placeholder="Historia" required value={newGame.historia} onChange={(e) => setNewGame({...newGame, historia: e.target.value})} />
+                <input type="text" placeholder="Requisitos mínimos" required value={newGame.requisitosMinimos} onChange={(e) => setNewGame({...newGame, requisitosMinimos: e.target.value})} />
+
+                {/* ✔ CAMPOS NUMÉRICOS CLAROS */}
+                <input type="number" placeholder="Precio (COP)" required value={newGame.precio} onChange={(e) => setNewGame({...newGame, precio: Number(e.target.value)})} />
+                <input type="number" placeholder="Descargas totales" required value={newGame.descargas} onChange={(e) => setNewGame({...newGame, descargas: Number(e.target.value)})} />
+                <input type="number" placeholder="Calificación (0 - 10)" step="0.1" required value={newGame.calificacion} onChange={(e) => setNewGame({...newGame, calificacion: Number(e.target.value)})} />
+
                 <div className="flex gap-2 mt-2">
                   <button className="btn primary" type="submit">Guardar</button>
                   <button className="btn outline" type="button" onClick={() => { setShowAddModal(false); setShowEditModal(false); setSelectedGame(null); }}>Cancelar</button>
                 </div>
               </form>
+
             </div>
           </div>
         )}
 
-        {/* 🔍 Barra de búsqueda */}
         <div className="filtros flex gap-2 mb-4">
           <input type="text" placeholder="Buscar juego..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} className="buscador-input flex-1" />
           <select value={genre} onChange={(e) => setGenre(e.target.value)}>
@@ -308,12 +314,15 @@ export default function BibliotecaJuegos({ user }) {
 
                     <div className="card-buttons">
                       <button className="btn ver" onClick={() => navigate(`/game/${j._id}`)}>Ver más</button>
+
                       {enDeseos ? (
                         <button className="btn deseos gold" disabled>★ En deseos</button>
                       ) : (
                         <button className="btn deseos outline" onClick={() => addWishlist(j)}>Añadir a deseos</button>
                       )}
+
                       <button className="btn comprar success" onClick={() => navigate("/buy", { state: { game: j } })}>Comprar</button>
+
                       {user && token && (
                         <>
                           <button className="btn editar primary" onClick={() => openEditModal(j)}>Editar</button>
@@ -326,7 +335,6 @@ export default function BibliotecaJuegos({ user }) {
               })}
             </div>
 
-            {/* 🔹 Paginación */}
             <Pagination currentPage={currentPage} totalPages={totalPages} setPage={setCurrentPage} />
           </>
         )}
