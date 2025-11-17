@@ -71,14 +71,22 @@ export default function GameDetail({ user }) {
   //const bannerUrl = juego.banner.jpg;
 
   // 🔹 Normalizar URL del banner para que funcione en GitHub Pages y en dev
-let bannerUrl = juego.banner;
+  //let bannerUrl = juego.banner;
 
-// Si NO es una URL absoluta (http/https), la construimos con BASE_URL
-if (bannerUrl && !/^https?:\/\//.test(bannerUrl)) {
-  const base = import.meta.env.BASE_URL || "/";
-  bannerUrl =
-    base.replace(/\/+$/, "") + "/" + bannerUrl.replace(/^\/+/, "");
-}
+  // Detectar si estamos en dev o en producción (GitHub Pages)
+  const isDev = import.meta.env.DEV;
+  const basePath = isDev ? "" : "/biblioteca-juegos-frontend";
+
+  // Tomar el banner que viene del juego o usar uno por defecto
+  let bannerPath = juego.banner || "images/MarvelsSpiderMan.banner.jpg";
+
+  // Asegurarnos de que empiece con "/"
+  if (!bannerPath.startsWith("/")) {
+    bannerPath = "/" + bannerPath;
+  }
+
+  // URL FINAL que va al <img>
+  const bannerUrl = `${basePath}${bannerPath}`;
 
 
   // === FAVORITO ===
