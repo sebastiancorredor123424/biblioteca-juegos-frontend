@@ -15,7 +15,10 @@ export default function Register({ onRegister }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = (import.meta.env.VITE_API_URL ?? "https://biblioteca-juegos-backend-production.up.railway.app")
+  const API_URL = (
+    import.meta.env.VITE_API_URL ??
+    "https://biblioteca-juegos-backend-production.up.railway.app"
+  )
     .replace(/\/+$/, "") + "/";
 
   function handleChange(e) {
@@ -44,16 +47,34 @@ export default function Register({ onRegister }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-        credentials: "include",
+        // ⛔ SE QUITA PARA EVITAR EL ERROR CORS
+        //credentials: "include",
       });
 
       const text = await res.text();
+
+      console.log("REGISTER → status:", res.status);
+      console.log("REGISTER → url:", res.url);
+      console.log(
+        "REGISTER → raw response (primeros 300 chars):",
+        text.slice(0, 300)
+      );
+
+      const contentType = res.headers.get("content-type") || "";
+
+      if (!contentType.includes("application/json")) {
+        console.error("Register devolvió algo NO JSON:", text);
+        throw new Error(
+          `El servidor devolvió una respuesta no válida (status ${res.status}).`
+        );
+      }
 
       let data;
       try {
         data = JSON.parse(text);
       } catch {
-        throw new Error("Error inesperado en la respuesta del servidor.");
+        console.error("Error al parsear JSON REGISTER:", text);
+        throw new Error("No se pudo interpretar la respuesta del servidor.");
       }
 
       if (!res.ok) throw new Error(data.error || "Error al registrar usuario");
