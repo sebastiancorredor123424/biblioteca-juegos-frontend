@@ -1,4 +1,5 @@
-const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://biblioteca-juegos-backend-production.up.railway.app";
+
 
 export async function login(email, password) {
   const res = await fetch(`${API}/api/users/login`, {
