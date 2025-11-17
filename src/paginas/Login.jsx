@@ -10,7 +10,10 @@ export default function Login({ onLogin }) {
   const API_URL = (import.meta.env.VITE_API_URL ?? "https://biblioteca-juegos-backend-production.up.railway.app")
     .replace(/\/+$/, "") + "/";
 
-  async function handleSubmit(e) {
+    console.log("VITE_API_URL =>", import.meta.env.VITE_API_URL);
+    console.log("API_URL FINAL =>", API_URL);
+
+  /*async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
@@ -37,6 +40,66 @@ export default function Login({ onLogin }) {
       }
 
       if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
+
+      localStorage.setItem("gt_user", JSON.stringify(data.user));
+      localStorage.setItem("gt_token", data.token);
+
+      if (onLogin) onLogin(data.user);
+
+      alert(`🎮 Bienvenido de nuevo, ${data.user.nombre}!`);
+      navigate("/");
+    } catch (err) {
+      setError(`❌ ${err.message}`);
+    }
+  }*/
+
+    async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim() || !password.trim()) {
+      setError("⚠️ Todos los campos son obligatorios.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: email, password }),
+        credentials: "include",
+      });
+
+      const text = await res.text();
+
+      console.log("Login → status:", res.status);
+      console.log("Login → url:", res.url);
+      console.log(
+        "Login → raw response (primeros 300 chars):",
+        text.slice(0, 300)
+      );
+
+      const contentType = res.headers.get("content-type") || "";
+
+      // Si no viene JSON, mostramos el texto y lanzamos un error entendible
+      if (!contentType.includes("application/json")) {
+        console.error("Respuesta NO JSON desde el backend:", text);
+        throw new Error(
+          `El servidor devolvió una respuesta no válida (status ${res.status}).`
+        );
+      }
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("Error al parsear JSON:", text);
+        throw new Error("No se pudo interpretar la respuesta del servidor.");
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || "Error al iniciar sesión");
+      }
 
       localStorage.setItem("gt_user", JSON.stringify(data.user));
       localStorage.setItem("gt_token", data.token);
