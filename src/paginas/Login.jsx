@@ -7,9 +7,12 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // 🔹 URL correcta con "/" final obligatorio
-  const API_URL =
-    (import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app/").trim();
+  // 🔹 Asegurar que termine en "/"
+  let API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://biblioteca-juegos-backend-production.up.railway.app/";
+
+  if (!API_URL.endsWith("/")) API_URL = API_URL + "/";
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -28,7 +31,6 @@ export default function Login({ onLogin }) {
         credentials: "include",
       });
 
-      // Evitar parsear HTML como JSON
       const text = await res.text();
 
       let data;
@@ -40,7 +42,6 @@ export default function Login({ onLogin }) {
 
       if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
 
-      // Guardar usuario y token
       localStorage.setItem("gt_user", JSON.stringify(data.user));
       localStorage.setItem("gt_token", data.token);
 

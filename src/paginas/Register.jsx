@@ -15,9 +15,12 @@ export default function Register({ onRegister }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 URL correcta con "/" final
-  const API_URL =
-    (import.meta.env.VITE_API_URL || "https://biblioteca-juegos-backend-production.up.railway.app/").trim();
+  // 🔹 Asegurar que termine en "/"
+  let API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://biblioteca-juegos-backend-production.up.railway.app/";
+
+  if (!API_URL.endsWith("/")) API_URL = API_URL + "/";
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -48,7 +51,6 @@ export default function Register({ onRegister }) {
         credentials: "include",
       });
 
-      // Evitar parsear HTML como JSON
       const text = await res.text();
 
       let data;
