@@ -15,11 +15,10 @@ export default function Register({ onRegister }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = (
-    import.meta.env.VITE_API_URL ??
-    "https://biblioteca-juegos-backend-production.up.railway.app"
-  )
-    .replace(/\/+$/, "") + "/";
+  const API_URL =
+    (import.meta.env.VITE_API_URL ??
+      "https://biblioteca-juegos-backend-production.up.railway.app")
+      .replace(/\/+$/, "") + "/";
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -30,13 +29,14 @@ export default function Register({ onRegister }) {
     e.preventDefault();
     setError("");
 
+    // Validación
     if (
       !form.nombre.trim() ||
       !form.userName.trim() ||
       !form.correo.trim() ||
       !form.password.trim()
     ) {
-      setError("⚠️ Todos los campos obligatorios excepto la foto de perfil.");
+      setError("⚠️ Todos los campos son obligatorios excepto la foto de perfil.");
       return;
     }
 
@@ -47,38 +47,37 @@ export default function Register({ onRegister }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-        // ⛔ SE QUITA PARA EVITAR EL ERROR CORS
-        //credentials: "include",
+        // ❌ ya NO se usa credentials en register
       });
 
-      const text = await res.text();
+      const raw = await res.text();
 
       console.log("REGISTER → status:", res.status);
       console.log("REGISTER → url:", res.url);
-      console.log(
-        "REGISTER → raw response (primeros 300 chars):",
-        text.slice(0, 300)
-      );
+      console.log("REGISTER → raw response:", raw.slice(0, 300));
 
       const contentType = res.headers.get("content-type") || "";
 
       if (!contentType.includes("application/json")) {
-        console.error("Register devolvió algo NO JSON:", text);
+        console.error("❌ REGISTER devolvió algo NO JSON:", raw);
         throw new Error(
-          `El servidor devolvió una respuesta no válida (status ${res.status}).`
+          `El servidor devolvió una respuesta inválida (status ${res.status}).`
         );
       }
 
+      // Parseo seguro
       let data;
       try {
-        data = JSON.parse(text);
+        data = JSON.parse(raw);
       } catch {
-        console.error("Error al parsear JSON REGISTER:", text);
+        console.error("❌ Error al parsear JSON REGISTER:", raw);
         throw new Error("No se pudo interpretar la respuesta del servidor.");
       }
 
+      // Manejo de errores del servidor
       if (!res.ok) throw new Error(data.error || "Error al registrar usuario");
 
+      // Guardar sesión
       localStorage.setItem("gt_user", JSON.stringify(data.user));
       localStorage.setItem("gt_token", data.token);
 
@@ -97,6 +96,7 @@ export default function Register({ onRegister }) {
     <div className="auth-page">
       <div className="auth-box">
         <h2>Crear cuenta</h2>
+
         {error && <div className="error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
@@ -107,6 +107,7 @@ export default function Register({ onRegister }) {
             value={form.nombre}
             onChange={handleChange}
           />
+
           <input
             type="text"
             name="userName"
@@ -114,6 +115,7 @@ export default function Register({ onRegister }) {
             value={form.userName}
             onChange={handleChange}
           />
+
           <input
             type="email"
             name="correo"
@@ -121,6 +123,7 @@ export default function Register({ onRegister }) {
             value={form.correo}
             onChange={handleChange}
           />
+
           <input
             type="password"
             name="password"
@@ -128,6 +131,7 @@ export default function Register({ onRegister }) {
             value={form.password}
             onChange={handleChange}
           />
+
           <input
             type="text"
             name="fotoPerfil"
