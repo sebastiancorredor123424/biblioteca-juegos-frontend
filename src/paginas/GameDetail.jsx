@@ -68,7 +68,18 @@ export default function GameDetail({ user }) {
   const precio = juego.precio || 100000;
 
   // 🔹 RUTA CORRECTA → NO modificar, usar tal cual viene del backend
-  const bannerUrl = juego.banner.jpg;
+  //const bannerUrl = juego.banner.jpg;
+
+  // 🔹 Normalizar URL del banner para que funcione en GitHub Pages y en dev
+let bannerUrl = juego.banner;
+
+// Si NO es una URL absoluta (http/https), la construimos con BASE_URL
+if (bannerUrl && !/^https?:\/\//.test(bannerUrl)) {
+  const base = import.meta.env.BASE_URL || "/";
+  bannerUrl =
+    base.replace(/\/+$/, "") + "/" + bannerUrl.replace(/^\/+/, "");
+}
+
 
   // === FAVORITO ===
   async function toggleFavorite() {
