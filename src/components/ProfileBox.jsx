@@ -8,7 +8,7 @@ export default function ProfileBox({ user, onLogout }) {
     <div className="profile-box" onMouseLeave={() => setOpen(false)}>
       <div className="profile-main" onClick={() => setOpen((v) => !v)}>
         <img
-          src={user.avatar || "/images/default-avatar.png"}
+          src={user.avatar || "images/default-avatar.png"}
           alt={user.name}
           className="avatar"
         />
